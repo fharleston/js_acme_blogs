@@ -143,11 +143,14 @@ function addButtonListeners(){
     
     let buttonList = [];
     for (let x = 0; x < buttons.length; x++){
-        if (buttons[x].hasAttribute("data-post-id")){
+        if (buttons[x].hasAttribute("data-post-id")/* && buttons[x].textContent !== ""*/){
            let test = buttons[x].getAttribute("data-post-id");
-           buttons[x].addEventListener("click", function (e) {toggleComments(e, test)}); 
-           buttonList.push(buttons[x]);
+           console.log(test);
+           console.log(buttons[x].textContent);
+           buttons[x].addEventListener('click', function (e) {toggleComments(e, test)}); 
+           //buttonList.push(buttons[x]);
         };
+        buttonList.push(buttons[x]);
     };
    
     return buttonList;
@@ -504,8 +507,10 @@ async function refreshPosts(posts){
     if (!posts){
         return undefined;
     };
-    let removeButtons = await removeButtonListeners();
-    let main = await deleteChildElements();
+
+    let mainElement = document.querySelector("main");
+    let removeButtons = removeButtonListeners();
+    let main = await deleteChildElements(mainElement);
     let fragment = await displayPosts(posts);
     let addButtons = await addButtonListeners();
     let results = [removeButtons, main, fragment, addButtons];
@@ -529,15 +534,11 @@ async function selectMenuChangeEventHandler(event){
         return undefined;
     };
     document.getElementById("selectMenu").disabled = true;
-    let userId = event.target || 1;
-    console.log(userId);
+    let userId = event?.target?.value || 1;
     let posts = await getUserPosts(userId);
     let refreshPostsArray = await refreshPosts(posts);
     document.getElementById("selectMenu").disabled = false;
     let results = [userId, posts, refreshPostsArray];
-    console.log(results);
-    console.log(posts);
-    console.log(refreshPostsArray);
     return results;
 };
 
